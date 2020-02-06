@@ -8,7 +8,7 @@
 <h1>Hello, Rust and Wasm!</h1>
 <div id="app"></div>
 <script type="module">
-    import init, {main} from "./pkg/hello_wasm.min.js";
+    import init from "./pkg/hello_wasm.min.js";
 
     (async function () {
         // need to give a path here, because it looks for bundle_bg.wasm without it.
