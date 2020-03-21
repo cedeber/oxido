@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Rust + Canvas</title>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<script type="module">
+    import init from "./pkg/canvas.js";
+
+    (async function () {
+        await init(); // init is main()
+    }());
+</script>
+</body>
+</html>
