@@ -5,12 +5,13 @@
     <title>Rust + Canvas</title>
 </head>
 <body>
-<canvas id="canvas"></canvas>
 <script type="module">
-    import init from "./pkg/canvas.js";
+    import init, { setup } from "./pkg/canvas.js";
 
     (async function () {
         await init(); // init is main()
+
+        await setup(640, 480);
     }());
 </script>
 </body>

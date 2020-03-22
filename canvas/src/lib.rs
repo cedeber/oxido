@@ -13,12 +13,25 @@ pub fn main() -> Result<(), JsValue> {
     #[cfg(debug_assertions)]
     console_error_panic_hook::set_once();
 
+    Ok(())
+}
+
+#[wasm_bindgen]
+pub fn setup(width: u32, height: u32) -> Result<(), JsValue> {
     let document = web_sys::window().unwrap().document().unwrap();
-    let canvas = document.get_element_by_id("canvas").unwrap();
-    let canvas: web_sys::HtmlCanvasElement = canvas
-        .dyn_into::<web_sys::HtmlCanvasElement>()
-        .map_err(|_| ())
-        .unwrap();
+    // let canvas = document.get_element_by_id("canvas").unwrap();
+    // let canvas: web_sys::HtmlCanvasElement = canvas
+    //     .dyn_into::<web_sys::HtmlCanvasElement>()
+    //     .map_err(|_| ())
+    //     .unwrap();
+    let canvas = document
+        .create_element("canvas")?
+        .dyn_into::<web_sys::HtmlCanvasElement>()?;
+    document.body().unwrap().append_child(&canvas)?;
+    canvas.set_width(width);
+    canvas.set_height(height);
+    canvas.style().set_property("border", "solid")?;
+    canvas.style().set_property("image-rendering", "optimizequality")?;
 
     let context = canvas
         .get_context("2d")
