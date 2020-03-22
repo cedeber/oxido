@@ -31,7 +31,7 @@ pub fn setup(width: u32, height: u32) -> Result<(), JsValue> {
     canvas.set_width(width);
     canvas.set_height(height);
     canvas.style().set_property("border", "solid")?;
-    canvas.style().set_property("image-rendering", "optimizequality")?;
+    canvas.style().set_property("image-rendering", "crisp-edges")?;
 
     let context = canvas
         .get_context("2d")
