@@ -28,10 +28,10 @@ pub fn setup(width: u32, height: u32) -> Result<(), JsValue> {
     document.body().unwrap().append_child(&canvas)?;
     canvas.set_width(width);
     canvas.set_height(height);
-    canvas.style().set_property("border", "solid")?;
     canvas
         .style()
         .set_property("image-rendering", "crisp-edges")?;
+    canvas.style().set_property("cursor", "cell")?;
 
     let context = canvas
         .get_context("2d")
