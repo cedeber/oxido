@@ -1,12 +1,15 @@
+use core::cell::Cell;
+use std::rc::Rc;
 use std::f64;
 use wasm_bindgen::prelude::*;
 use web_sys::{CanvasRenderingContext2d, MouseEvent};
 
 pub fn draw(
     context: &CanvasRenderingContext2d,
-    event: Option<MouseEvent>,
+    event: &Option<MouseEvent>,
     width: &u32,
     height: &u32,
+    pressed_position: &Rc<Cell<Option<(i32, i32)>>>,
 ) {
     context.clear_rect(0.0, 0.0, *width as f64, *height as f64);
 
@@ -16,6 +19,7 @@ pub fn draw(
     context.fill_rect(0.0, 0.0, *width as f64, *height as f64);
 
     context.begin_path();
+    context.set_line_width(1.0);
     context.set_stroke_style(&JsValue::from("#D392E6"));
 
     // Draw the outer circle.
@@ -44,6 +48,20 @@ pub fn draw(
     // Draw the mouse lines
     match event {
         Some(e) => {
+            // Draw the select rectangle
+            match pressed_position.get() {
+                Some(p) => {
+                    let width = e.offset_x() - p.0;
+                    let height = e.offset_y() - p.1;
+
+                    context.begin_path();
+                    context.set_stroke_style(&JsValue::from("dodgerblue"));
+                    context.rect(p.0 as f64, p.1 as f64, width.into(), height.into());
+                    context.stroke();
+                }
+                None => {}
+            }
+
             context.begin_path();
             context.set_stroke_style(&JsValue::from("#A61B85"));
             context.move_to(e.offset_x() as f64, 0.0);

@@ -1,4 +1,5 @@
 use crate::utils::draw;
+use std::cell::Cell;
 use std::rc::Rc;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
@@ -38,19 +39,55 @@ pub fn setup(id: String, width: u32, height: u32) -> Result<(), JsValue> {
         .dyn_into::<CanvasRenderingContext2d>()
         .unwrap();
     let context = Rc::new(context);
+    let pressed_position = Rc::new(Cell::new(None));
 
     {
-        // MouseEvent Closure
-        let context = context.clone();
+        // MouseDown Event Closure
+        let pressed_position = pressed_position.clone();
         let closure = Closure::wrap(Box::new(move |event: MouseEvent| {
-            draw(&context, Some(event), &width, &height)
+            pressed_position.set(Some((event.offset_x(), event.offset_y())));
+        }) as Box<dyn FnMut(_)>);
+
+        canvas.add_event_listener_with_callback("mousedown", closure.as_ref().unchecked_ref())?;
+        closure.forget();
+    }
+    {
+        // MouseUp Event Closure
+        let context = context.clone();
+        let pressed_position = pressed_position.clone();
+        let closure = Closure::wrap(Box::new(move |event: MouseEvent| {
+            pressed_position.set(None);
+            draw(&context, &Some(event), &width, &height, &pressed_position);
+        }) as Box<dyn FnMut(_)>);
+
+        canvas.add_event_listener_with_callback("mouseup", closure.as_ref().unchecked_ref())?;
+        closure.forget();
+    }
+    {
+        // MouseMove Event Closure
+        let context = context.clone();
+        let pressed_position = pressed_position.clone();
+        let closure = Closure::wrap(Box::new(move |event: MouseEvent| {
+            draw(&context, &Some(event), &width, &height, &pressed_position);
         }) as Box<dyn FnMut(_)>);
 
         canvas.add_event_listener_with_callback("mousemove", closure.as_ref().unchecked_ref())?;
         closure.forget();
     }
+    {
+        // MouseOut Event Closure
+        let context = context.clone();
+        let pressed_position = pressed_position.clone();
+        let closure = Closure::wrap(Box::new(move |_: MouseEvent| {
+            pressed_position.set(None);
+            draw(&context, &None, &width, &height, &pressed_position);
+        }) as Box<dyn FnMut(_)>);
 
-    draw(&context, None, &width, &height);
+        canvas.add_event_listener_with_callback("mouseout", closure.as_ref().unchecked_ref())?;
+        closure.forget();
+    }
+
+    draw(&context, &None, &width, &height, &pressed_position);
 
     Ok(())
 }
