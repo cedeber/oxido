@@ -3,16 +3,22 @@
 <head>
     <meta charset="utf-8">
     <title>Game of Life</title>
+    <style>
+        canvas {
+            image-rendering: crisp-edges;
+            cursor: cell;
+        }
+    </style>
 </head>
 <body>
-<script type="module">
-    import init, { setup } from "./pkg/game_of_life.js";
+    <canvas id="game-of-life"></canvas>
+    <script type="module">
+        import init, { setup } from "./pkg/game_of_life.js";
 
-    (async function () {
-        await init(); // init is main()
-
-        await setup(640, 480);
-    }());
-</script>
+        (async function () {
+            await init(); // init is main()
+            await setup("game-of-life", 640, 480);
+        }());
+    </script>
 </body>
 </html>

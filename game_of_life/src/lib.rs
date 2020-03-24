@@ -1,10 +1,10 @@
-mod utils;
-
 use crate::utils::draw;
 use std::rc::Rc;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement, MouseEvent};
+
+mod utils;
 
 #[cfg(feature = "wee_alloc")]
 #[global_allocator]
@@ -19,19 +19,17 @@ pub fn main() -> Result<(), JsValue> {
 }
 
 #[wasm_bindgen]
-pub fn setup(width: u32, height: u32) -> Result<(), JsValue> {
+pub fn setup(id: String, width: u32, height: u32) -> Result<(), JsValue> {
     let window = web_sys::window().expect("should have a window in this context");
     let document = window.document().expect("window should have a document");
-    let canvas = document
-        .create_element("canvas")?
-        .dyn_into::<HtmlCanvasElement>()?;
-    document.body().unwrap().append_child(&canvas)?;
+    let canvas = document.get_element_by_id(&id).unwrap();
+    let canvas: HtmlCanvasElement = canvas
+        .dyn_into::<HtmlCanvasElement>()
+        .map_err(|_| ())
+        .unwrap();
+
     canvas.set_width(width);
     canvas.set_height(height);
-    canvas
-        .style()
-        .set_property("image-rendering", "crisp-edges")?;
-    canvas.style().set_property("cursor", "cell")?;
 
     let context = canvas
         .get_context("2d")
@@ -39,7 +37,6 @@ pub fn setup(width: u32, height: u32) -> Result<(), JsValue> {
         .unwrap()
         .dyn_into::<CanvasRenderingContext2d>()
         .unwrap();
-
     let context = Rc::new(context);
 
     {
