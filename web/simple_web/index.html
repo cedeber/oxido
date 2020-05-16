@@ -8,12 +8,12 @@
 <div id="app"></div>
 <script type="module">
     import init, { add } from "./pkg/simple_web.js";
-    let app = document.querySelector("#app");
 
     (async function () {
-        // may give a path, because it looks for wathever_bg.wasm from the JS file path.
-        await init(); // init is main()
+        // init is main();
+        await init(); // Accept a path as param if the .wasm file is not package_bg.wasm
 
+        let app = document.querySelector("#app");
         app.innerHTML = add(3, 2);
     }());
 </script>
