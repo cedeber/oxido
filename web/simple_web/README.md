@@ -1,5 +1,5 @@
 # Simple Web
-the simplest example of communication between WASM and JavaScript.
+The simplest example of communication between WASM and JavaScript.
 
 ## Build WebAssembly
-`wasm-pack build --target web --release`
+Check the [Makefile](Makefile)
