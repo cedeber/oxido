@@ -1,6 +1,19 @@
-use actix_web::{middleware, web, App, HttpRequest, HttpServer, Responder};
+use actix_web::{get, middleware, web, App, HttpRequest, HttpResponse, HttpServer, Responder};
 
-async fn index(req: HttpRequest) -> impl Responder {
+#[get("/hello")]
+async fn hello() -> impl Responder {
+    HttpResponse::Ok().body("Hey there!")
+}
+
+struct Info {
+    name: String,
+}
+
+async fn _index(path: web::Path<Info>) -> String {
+    format!("Welcome {}!", path.name)
+}
+
+async fn index(req: HttpRequest) -> String {
     println!("REQ: {:?}", req);
     let name = req.match_info().get("name").unwrap_or("World");
     format!("Hello {}!", &name)
@@ -15,6 +28,8 @@ async fn main() -> std::io::Result<()> {
         App::new()
             // enable logger
             .wrap(middleware::Logger::default())
+            .service(hello)
+            .service(web::scope("/app").route("/index.html", web::get().to(index)))
             .route("/", web::get().to(index))
             .route("/{name}", web::get().to(index))
     })
