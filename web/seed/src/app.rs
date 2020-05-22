@@ -113,8 +113,8 @@ fn draw(canvas: &ElRef<HtmlCanvasElement>, fill_color: Color) {
 // pub fn view(model: &Model) -> Vec<Node<Msg>> {
 pub fn view(model: &Model) -> impl IntoNodes<Msg> {
     vec![
-        h2![format!("X: {}, Y: {}", model.point.x, model.point.y)],
-        h2![format!("Last key pressed: {}", model.key_code)],
+        p![format!("X: {}, Y: {}", model.point.x, model.point.y)],
+        p![format!("Last key pressed: {}", model.key_code)],
         button![
             ev(Ev::Click, |_| Msg::ToggleWatching),
             if model.event_streams.is_empty() {
@@ -139,6 +139,8 @@ pub fn view(model: &Model) -> impl IntoNodes<Msg> {
                 style![
                     St::Border => "1px solid black",
                 ],
+                ev(Ev::MouseEnter, |_| Msg::ChangeColor),
+                ev(Ev::MouseOut, |_| Msg::ChangeColor),
             ],
             button!["Change color", ev(Ev::Click, |_| Msg::ChangeColor)],
         ],
