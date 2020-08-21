@@ -1,21 +1,32 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>Simple template</title>
-</head>
-<body>
-<div id="app"></div>
-<script type="module">
-    import init, { add } from "./pkg/simple_web.js";
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Simple WASM</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <div id="worker"></div>
+    <script type="module">
+      import init, { add } from "./pkg/simple_web.js";
 
-    (async function () {
+      (async function () {
         // init is main();
         await init(); // Accept a path as param if the .wasm file is not package_bg.wasm
 
         let app = document.querySelector("#app");
         app.innerHTML = add(3, 2);
-    }());
-</script>
-</body>
+      })();
+    </script>
+    <script type="module">
+      let worker = new Worker("./worker.js", { type: "module" });
+      let app = document.querySelector("#worker");
+
+      worker.addEventListener("message", (event) => {
+        app.innerHTML = event.data;
+      });
+
+      worker.postMessage({ a: 3, b: 2 });
+    </script>
+  </body>
 </html>
