@@ -1,6 +1,6 @@
 target
 pkg
-node_modules
 *.lock
 .idea
+*.iml
 .DS_Store
