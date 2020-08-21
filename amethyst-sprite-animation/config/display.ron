@@ -1,0 +1,4 @@
+(
+    title: "Amethyst Sprite Animation!",
+    dimensions: Some((500, 500)),
+)
