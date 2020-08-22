@@ -11,6 +11,7 @@ use amethyst::{
         types::DefaultBackend,
         RenderingBundle,
     },
+    ui::{RenderUi, UiBundle},
     utils::application_root_dir,
 };
 
@@ -26,6 +27,7 @@ fn main() -> amethyst::Result<()> {
         // Add the transform bundle which handles tracking entity positions
         .with_bundle(TransformBundle::new())?
         .with_bundle(InputBundle::<StringBindings>::new().with_bindings_from_file(bindings_path)?)?
+        .with_bundle(UiBundle::<StringBindings>::new())?
         .with(systems::PaddleSystem, "paddle_system", &["input_system"])
         .with(systems::MoveBallsSystem, "ball_system", &[])
         .with(
@@ -33,6 +35,7 @@ fn main() -> amethyst::Result<()> {
             "collision_system",
             &["paddle_system", "ball_system"],
         )
+        .with(systems::WinnerSystem, "winner_system", &["ball_system"])
         .with_bundle(
             RenderingBundle::<DefaultBackend>::new()
                 // The RenderToWindow plugin provides all the scaffolding for opening a window and drawing on it
@@ -41,7 +44,8 @@ fn main() -> amethyst::Result<()> {
                         .with_clear([0.0, 0.0, 0.0, 1.0]),
                 )
                 // RenderFlat2D plugin is used to render entities with a `SpriteRender` component.
-                .with_plugin(RenderFlat2D::default()),
+                .with_plugin(RenderFlat2D::default())
+                .with_plugin(RenderUi::default()),
         )?;
 
     let mut game = Application::new(assets_path, Pong::default(), game_data)?;
