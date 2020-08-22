@@ -1,5 +1,5 @@
 [package]
-name = "amethyst-sprite-animation"
+name = "amethyst-boing"
 version = "0.1.0"
 authors = ["Cédric Eberhardt <hello+code@cedeber.fr>"]
 edition = "2018"
