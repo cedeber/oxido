@@ -41,9 +41,35 @@ impl Plugin for HelloPlugin {
     }
 }
 
+// --- Sprite ---
+fn add_sprite(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
+) {
+    let texture_handle = asset_server.load("assets/gabe_idle_run.png").unwrap();
+    commands
+        .spawn(Camera2dComponents::default())
+        .spawn(SpriteComponents {
+            material: materials.add(texture_handle.into()),
+            ..Default::default()
+        });
+}
+
+pub struct SpritePlugin;
+
+impl Plugin for SpritePlugin {
+    fn build(&self, app: &mut AppBuilder) {
+        app.add_startup_system(add_sprite.system());
+    }
+}
+
+// --- Main ---
+
 fn main() {
     App::build()
         .add_default_plugins()
         .add_plugin(HelloPlugin)
+        .add_plugin(SpritePlugin)
         .run();
 }
