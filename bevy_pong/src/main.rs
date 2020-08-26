@@ -5,7 +5,7 @@ struct Person;
 
 struct Name(String);
 
-fn add_people(mut commands: Commands) {
+fn setup_people(mut commands: Commands) {
     commands
         .spawn((Person, Name("Elaina Proctor".to_string())))
         .spawn((Person, Name("Renzo Hume".to_string())))
@@ -36,13 +36,13 @@ impl Plugin for HelloPlugin {
     fn build(&self, app: &mut AppBuilder) {
         // the reason we call from_seconds with the true flag is to make the timer repeat itself
         app.add_resource(GreetTimer(Timer::from_seconds(2.0, true)))
-            .add_startup_system(add_people.system())
+            .add_startup_system(setup_people.system())
             .add_system(greet_people.system());
     }
 }
 
 // --- Sprite ---
-fn add_sprite(
+fn setup_sprite(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut materials: ResMut<Assets<ColorMaterial>>,
@@ -52,6 +52,7 @@ fn add_sprite(
         .spawn(Camera2dComponents::default())
         .spawn(SpriteComponents {
             material: materials.add(texture_handle.into()),
+            scale: Scale(6.0),
             ..Default::default()
         });
 }
@@ -60,7 +61,7 @@ pub struct SpritePlugin;
 
 impl Plugin for SpritePlugin {
     fn build(&self, app: &mut AppBuilder) {
-        app.add_startup_system(add_sprite.system());
+        app.add_startup_system(setup_sprite.system());
     }
 }
 
