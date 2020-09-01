@@ -65,12 +65,57 @@ impl Plugin for SpritePlugin {
     }
 }
 
+// --- Sprite Sheet ---
+fn setup_sprite_sheet(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    mut textures: ResMut<Assets<Texture>>,
+    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
+) {
+    let texture_handle = asset_server
+        .load_sync(&mut textures, "assets/gabe_idle_run.png")
+        .unwrap();
+    let texture = textures.get(&texture_handle).unwrap();
+    let texture_atlas = TextureAtlas::from_grid(texture_handle, texture.size, 7, 1);
+    let texture_atlas_handle = texture_atlases.add(texture_atlas);
+    commands
+        .spawn(Camera2dComponents::default())
+        .spawn(SpriteSheetComponents {
+            texture_atlas: texture_atlas_handle,
+            scale: Scale(6.0),
+            ..Default::default()
+        })
+        .with(Timer::from_seconds(0.1, true));
+}
+
+fn animate_sprite_sheet(
+    texture_atlases: Res<Assets<TextureAtlas>>,
+    mut query: Query<(&mut Timer, &mut TextureAtlasSprite, &Handle<TextureAtlas>)>,
+) {
+    for (timer, mut sprite, texture_atlas_handle) in &mut query.iter() {
+        if timer.finished {
+            let texture_atlas = texture_atlases.get(&texture_atlas_handle).unwrap();
+            sprite.index = ((sprite.index as usize + 1) % texture_atlas.textures.len()) as u32;
+        }
+    }
+}
+
+pub struct SpriteSheetPlugin;
+
+impl Plugin for SpriteSheetPlugin {
+    fn build(&self, app: &mut AppBuilder) {
+        app.add_startup_system(setup_sprite_sheet.system())
+            .add_system(animate_sprite_sheet.system());
+    }
+}
+
 // --- Main ---
 
 fn main() {
     App::build()
         .add_default_plugins()
         .add_plugin(HelloPlugin)
+        .add_plugin(SpriteSheetPlugin)
         .add_plugin(SpritePlugin)
         .run();
 }
