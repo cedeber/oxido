@@ -1,4 +1,13 @@
-use bevy::prelude::*;
+use bevy::{
+    input::keyboard::{ElementState, KeyboardInput},
+    prelude::*,
+};
+
+// --- State ---
+#[derive(Default)]
+struct State {
+    event_reader: EventReader<KeyboardInput>,
+}
 
 // --- Person ---
 struct Person;
@@ -109,13 +118,64 @@ impl Plugin for SpriteSheetPlugin {
     }
 }
 
-// --- Main ---
+// --- Keyboard ---
+/// This system prints 'A' key state
+fn keyboard_input(keyboard_input: Res<Input<KeyCode>>) {
+    if keyboard_input.pressed(KeyCode::A) {
+        println!("'A' currently pressed");
+    }
+
+    if keyboard_input.just_pressed(KeyCode::A) {
+        println!("'A' just pressed");
+    }
+
+    if keyboard_input.just_released(KeyCode::A) {
+        println!("'A' just released");
+    }
+}
+
+fn print_keyboard_event(
+    mut state: ResMut<State>,
+    keyboard_input_events: Res<Events<KeyboardInput>>,
+) {
+    for event in state.event_reader.iter(&keyboard_input_events) {
+        println!("{:?}", event);
+
+        if let KeyboardInput {
+            key_code: Some(key_code),
+            state,
+            ..
+        } = event
+        {
+            match key_code {
+                KeyCode::A => match state {
+                    ElementState::Pressed => println!("=> 'A' just pressed"),
+                    ElementState::Released => println!("=> 'A' just released"),
+                },
+                _ => {}
+            }
+        }
+    }
+}
+
+pub struct KeyboardPlugin;
+
+impl Plugin for KeyboardPlugin {
+    fn build(&self, app: &mut AppBuilder) {
+        app.add_system(keyboard_input.system())
+            .add_system(print_keyboard_event.system());
+    }
+}
+
+// --- Main Application ---
 
 fn main() {
     App::build()
         .add_default_plugins()
+        .init_resource::<State>()
         .add_plugin(HelloPlugin)
         .add_plugin(SpriteSheetPlugin)
         .add_plugin(SpritePlugin)
+        .add_plugin(KeyboardPlugin)
         .run();
 }
