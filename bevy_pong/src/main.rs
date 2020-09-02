@@ -3,7 +3,6 @@ use bevy::{
     input::keyboard::{ElementState, KeyboardInput},
     prelude::*,
     render::pass::ClearColor,
-    window::WindowMode,
 };
 
 // --- State ---
@@ -78,6 +77,8 @@ impl Plugin for SpritePlugin {
 }
 
 // --- Sprite Sheet ---
+struct Gabe;
+
 fn setup_sprite_sheet(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
@@ -98,6 +99,7 @@ fn setup_sprite_sheet(
             translation: Translation(Vec3::new(0.0, -215.0, 0.0)),
             ..Default::default()
         })
+        .with(Gabe)
         .with(Timer::from_seconds(0.1, true));
 }
 
@@ -124,7 +126,11 @@ impl Plugin for SpriteSheetPlugin {
 
 // --- Keyboard ---
 /// This system prints 'A' key state
-fn keyboard_input(keyboard_input: Res<Input<KeyCode>>) {
+fn keyboard_input(
+    time: Res<Time>,
+    keyboard_input: Res<Input<KeyCode>>,
+    mut query: Query<(&Gabe, &mut Translation)>,
+) {
     if keyboard_input.pressed(KeyCode::A) {
         println!("'A' currently pressed");
     }
@@ -135,6 +141,19 @@ fn keyboard_input(keyboard_input: Res<Input<KeyCode>>) {
 
     if keyboard_input.just_released(KeyCode::A) {
         println!("'A' just released");
+    }
+
+    for (gabe, mut translation) in &mut query.iter() {
+        let mut direction = 0.0;
+        if keyboard_input.pressed(KeyCode::Left) {
+            direction -= 1.0;
+        }
+
+        if keyboard_input.pressed(KeyCode::Right) {
+            direction += 1.0;
+        }
+
+        *translation.0.x_mut() += time.delta_seconds * direction * 350.;
     }
 }
 
@@ -174,7 +193,6 @@ impl Plugin for KeyboardPlugin {
 }
 
 // --- Main Application ---
-
 fn main() {
     App::build()
         .add_resource(WindowDescriptor {
