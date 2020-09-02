@@ -1,6 +1,9 @@
 use bevy::{
+    app::AppExit,
     input::keyboard::{ElementState, KeyboardInput},
     prelude::*,
+    render::pass::ClearColor,
+    window::WindowMode,
 };
 
 // --- State ---
@@ -92,6 +95,7 @@ fn setup_sprite_sheet(
         .spawn(SpriteSheetComponents {
             texture_atlas: texture_atlas_handle,
             scale: Scale(6.0),
+            translation: Translation(Vec3::new(0.0, -215.0, 0.0)),
             ..Default::default()
         })
         .with(Timer::from_seconds(0.1, true));
@@ -137,6 +141,7 @@ fn keyboard_input(keyboard_input: Res<Input<KeyCode>>) {
 fn print_keyboard_event(
     mut state: ResMut<State>,
     keyboard_input_events: Res<Events<KeyboardInput>>,
+    mut app_exit_events: ResMut<Events<AppExit>>,
 ) {
     for event in state.event_reader.iter(&keyboard_input_events) {
         println!("{:?}", event);
@@ -152,6 +157,7 @@ fn print_keyboard_event(
                     ElementState::Pressed => println!("=> 'A' just pressed"),
                     ElementState::Released => println!("=> 'A' just released"),
                 },
+                KeyCode::Escape => app_exit_events.send(AppExit),
                 _ => {}
             }
         }
@@ -171,6 +177,15 @@ impl Plugin for KeyboardPlugin {
 
 fn main() {
     App::build()
+        .add_resource(WindowDescriptor {
+            title: "I am a window!".to_string(),
+            // width: 300,
+            // height: 300,
+            resizable: false,
+            // mode: WindowMode::Fullscreen { use_size: false },
+            ..Default::default()
+        })
+        .add_resource(ClearColor(Color::rgb(0.2, 0.2, 0.8)))
         .add_default_plugins()
         .init_resource::<State>()
         .add_plugin(HelloPlugin)
