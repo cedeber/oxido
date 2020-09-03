@@ -42,10 +42,14 @@ fn animate_sprite_sheet_system(
 
 fn keyboard_input_system(
     time: Res<Time>,
+    window: Res<Windows>,
     keyboard_input: Res<Input<KeyCode>>,
     mut app_exit_events: ResMut<Events<AppExit>>,
     mut query: Query<(&Gabe, &mut Translation)>,
 ) {
+    let window = window.get_primary().unwrap();
+    let width = ((window.width - 24 * 6) / 2) as f32;
+
     if keyboard_input.pressed(KeyCode::Escape) {
         app_exit_events.send(AppExit)
     }
@@ -63,7 +67,7 @@ fn keyboard_input_system(
         *translation.0.x_mut() += time.delta_seconds * direction * gabe.speed;
 
         // bound Gabe
-        *translation.0.x_mut() = f32::max(-380.0, f32::min(380.0, translation.0.x()));
+        *translation.0.x_mut() = f32::max(-width, f32::min(width, translation.0.x()));
     }
 }
 
