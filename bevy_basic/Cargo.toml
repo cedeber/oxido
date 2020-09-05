@@ -1,5 +1,5 @@
 [package]
-name = "bevy_basic_gabe"
+name = "bevy_basic"
 version = "0.1.0"
 authors = ["Cédric Eberhardt <hello+code@cedeber.fr>"]
 edition = "2018"
