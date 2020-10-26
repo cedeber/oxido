@@ -1,9 +1,14 @@
 use data_encoding::HEXUPPER;
 use dotenv;
+use jsonwebtoken::errors::ErrorKind;
+use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
 use ring::rand::SecureRandom;
 use ring::{digest, pbkdf2, rand};
+use serde::{Deserialize, Serialize};
 use std::num::NonZeroU32;
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
+// --- Password ---
 // @see https://briansmith.org/rustdoc/ring/pbkdf2/index.html
 
 static PBKDF2_ALG: pbkdf2::Algorithm = pbkdf2::PBKDF2_HMAC_SHA512;
@@ -53,11 +58,11 @@ fn generate_password(username: &str, password: &str) -> String {
 fn verify_password(
     username: &str,
     attempted_password: &str,
-    actual_password_hash: &str,
+    encoded_actual_password: &str,
 ) -> Result<(), Error> {
     let pbkdf2_iterations = NonZeroU32::new(100_000).unwrap();
     let salt = get_salt(username);
-    let actual_password = HEXUPPER.decode(actual_password_hash.as_bytes()).unwrap();
+    let actual_password = HEXUPPER.decode(encoded_actual_password.as_bytes()).unwrap();
     pbkdf2::verify(
         PBKDF2_ALG,
         pbkdf2_iterations,
@@ -68,11 +73,74 @@ fn verify_password(
     .map_err(|_| Error::WrongUsernameOrPassword)
 }
 
+// --- Token ---
+#[derive(Debug, Serialize, Deserialize)]
+struct Claims {
+    exp: usize,
+    sub: String,
+}
+
+fn generate_token(username: &str) -> String {
+    let secret = dotenv::var("TOKEN_SECRET").unwrap();
+    let exp = SystemTime::now()
+        .checked_add(Duration::from_secs(604800)) // 7 days
+        .unwrap()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_secs();
+
+    let my_claims = Claims {
+        exp: exp as usize,
+        sub: username.to_string(), // or email address
+    };
+
+    let token = encode(
+        &Header::default(),
+        &my_claims,
+        &EncodingKey::from_secret(secret.as_bytes()),
+    )
+    .unwrap();
+
+    token
+}
+
+// TODO: return Result<(), ErrorKind>?
+fn verify_token(username: &str, encoded_token: &str) -> bool {
+    let secret = dotenv::var("TOKEN_SECRET").unwrap();
+    let validation = Validation {
+        sub: Some(username.to_string()),
+        ..Default::default()
+    };
+    let token = decode::<Claims>(
+        &encoded_token,
+        &DecodingKey::from_secret(secret.as_bytes()),
+        &validation,
+    );
+
+    match token {
+        Ok(_data) => true,
+        Err(err) => match *err.kind() {
+            ErrorKind::InvalidToken => false,
+            ErrorKind::InvalidIssuer => false,
+            ErrorKind::InvalidSignature => false,
+            ErrorKind::InvalidSubject => panic!("Invalide subject"),
+            _ => false,
+        },
+    }
+}
+
+// --- Main ---
 fn main() {
-    let password_hash = generate_password("username", "password");
-    let check_ok = verify_password("username", "password", &password_hash);
-    let check_fail = verify_password("username", "pasword", &password_hash);
-    println!("Password hash: {}", &password_hash);
+    println!("--- Passwords ---");
+    let password = generate_password("username", "password");
+    let check_ok = verify_password("username", "password", &password);
+    let check_fail = verify_password("username", "pasword", &password);
+    println!("Password: {}", &password);
     println!("{:#?}", check_ok);
     println!("{:#?}", check_fail);
+    println!("--- Token ---");
+    let token = generate_token("username");
+    println!("Token: {}", &token);
+    println!("{:#?}", verify_token("username", &token));
+    println!("{:#?}", verify_token("user", &token));
 }
