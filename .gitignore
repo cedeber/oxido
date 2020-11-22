@@ -1,5 +1,7 @@
 target
 pkg
+*.env
+*.sqlite
 *.lock
 .idea
 *.iml
