@@ -1,4 +1,4 @@
-use actix::{Actor, ActorContext, Addr, AsyncContext, StreamHandler};
+use actix::{Actor, ActorContext, AsyncContext, StreamHandler};
 use actix_files as fs;
 use actix_web::{
     get, middleware, web, App, Error, HttpRequest, HttpResponse, HttpServer, Responder,
@@ -118,7 +118,7 @@ async fn users(web::Path((user_id, friend)): web::Path<(u32, String)>) -> Result
 }
 
 async fn my_async_delay_handler() -> impl Responder {
-    tokio::time::delay_for(Duration::from_secs(5)).await; // <-- Ok. Worker thread will handle other requests here
+    tokio::time::sleep(Duration::from_secs(5)).await; // <-- Ok. Worker thread will handle other requests here
     "response"
 }
 
