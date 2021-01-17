@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Simple WASM</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module">
+      let worker = new Worker("./worker.js", { type: "module" });
+      let app = document.querySelector("#app");
+
+      worker.addEventListener("message", (event) => {
+        app.innerHTML = event.data;
+      });
+
+      worker.postMessage({ a: 3, b: 2 });
+    </script>
+  </body>
+</html>

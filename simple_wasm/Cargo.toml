@@ -1,0 +1,18 @@
+[package]
+name = "simple_wasm"
+version = "0.1.0"
+authors = ["Cédric Eberhardt <hello+code@cedeber.fr>"]
+edition = "2018"
+
+[lib]
+crate-type = ["cdylib"]
+
+[profile.release]
+lto = true
+opt-level = 's'
+
+[features]
+default = ["wee_alloc"]
+
+[dependencies]
+wee_alloc = { version = "0.4", optional = true }
