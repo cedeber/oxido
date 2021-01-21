@@ -10,17 +10,16 @@ rustup target add wasm32-wasi
 cargo build --release --target wasm32-wasi
 ```
 
-## Run on the Terminal (CLI)
+## CLI
 
 ```sh
-wasmer run target/wasm32-wasi/release/simple_wasm.wasm -i add 3 2
+wasmer target/wasm32-wasi/release/simple_wasm.wasm -i add 3 2
+wasmtime target/wasm32-wasi/release/simple_wasm.wasm --invoke add 3 2
 ```
 
 ## Javascript
 
-You must run a server form the root with, for instance:
-```sh
-python3 -m http.server
-```
+The browsers have all the needed tools.
 
-And then access the page on `http://localhost:8000/javascript/`
+```sh
+```

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Simple WASM</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module">
+      (async function() {
+        let app = document.querySelector("#app");
+        let { add } = await getWasmExports('./target/wasm32-wasi/release/simple_wasm.wasm');
+
+        app.innerHTML = add(5, 37);
+
+        async function getWasmExports(path) {
+          let importObject = {};
+          let obj;
+
+          if (WebAssembly.instantiateStreaming) {
+            // new, more performant
+            obj = await WebAssembly.instantiateStreaming(fetch(path), importObject);
+          } else {
+            let file = await fetch(path);
+            let bytes = await file.arrayBuffer();
+            obj = await WebAssembly.instantiate(bytes, importObject);
+          }
+
+          return obj.instance.exports;
+        }
+      }())
+    </script>
+  </body>
+</html>
