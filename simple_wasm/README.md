@@ -10,6 +10,13 @@ rustup target add wasm32-wasi
 cargo build --release --target wasm32-wasi
 ```
 
+or
+
+```sh
+cargo install cargo-wasi
+cargo wasi build --release
+```
+
 ## CLI
 
 ```sh
