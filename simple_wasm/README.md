@@ -26,6 +26,5 @@ The browsers have all the needed tools.
 ```sh
 pip install wasmer
 pip install wasmer-compiler-cranelift
-# or
 pip install wasmtime
 ```
