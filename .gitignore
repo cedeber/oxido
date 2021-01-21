@@ -1,8 +1,10 @@
-target
-pkg
+target/
+pkg/
+venv/
 *.env
 *.sqlite
 *.lock
-.idea
+.idea/
+.vscode/
 *.iml
 .DS_Store
