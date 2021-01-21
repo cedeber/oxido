@@ -21,5 +21,11 @@ wasmtime target/wasm32-wasi/release/simple_wasm.wasm --invoke add 3 2
 
 The browsers have all the needed tools.
 
+## Python
+
 ```sh
+pip install wasmer
+pip install wasmer-compiler-cranelift
+# or
+pip install wasmtime
 ```
