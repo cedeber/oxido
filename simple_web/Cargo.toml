@@ -5,16 +5,28 @@ authors = ["Cédric Eberhardt <hello+code@cedeber.fr>"]
 edition = "2018"
 
 [lib]
-crate-type = ["cdylib"]
-
-[profile.release]
-lto = true
-opt-level = 's'
+crate-type = ["cdylib", "rlib"]
 
 [features]
 default = ["console_error_panic_hook", "wee_alloc"]
 
+[profile.release]
+# It will make the .wasm smaller, but it will also make it faster at runtime!
+lto = true
+# Tell `rustc` to optimize for small code size.
+opt-level = "s"
+# Also see https://rustwasm.github.io/book/reference/code-size.html#use-the-wasm-opt-tool 
+
 [dependencies]
-wasm-bindgen = "0.2"
-console_error_panic_hook = { version = "0.1", optional = true }
-wee_alloc = { version = "0.4", optional = true }
+wasm-bindgen = "0.2.75"
+
+# The `console_error_panic_hook` crate provides better debugging of panics by
+# logging them with `console.error`. This is great for development, but requires
+# all the `std::fmt` and `std::panicking` infrastructure, so isn't great for
+# code size when deploying.
+console_error_panic_hook = { version = "0.1.6", optional = true }
+
+# `wee_alloc` is a tiny allocator for wasm that is only ~1K in code size
+# compared to the default allocator's ~10K. It is slower than the default
+# allocator, however.
+wee_alloc = { version = "0.4.5", optional = true }
