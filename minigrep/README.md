@@ -1,5 +1,7 @@
 # Minigrep
 
+- `cargo run -- en poem.txt`
+
 ## WebAssembly, WASI and Wasmtime/Wasmer.io
 
 - `rustup target add wasm32-wasi`

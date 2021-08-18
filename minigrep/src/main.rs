@@ -5,6 +5,7 @@ use minigrep::Config;
 use std::{env, error::Error};
 
 // Use `wee_alloc` as the global allocator.
+#[cfg(feature = "wee_alloc")]
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 

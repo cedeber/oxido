@@ -6,11 +6,14 @@ edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[dependencies]
-clap = "3.0.0-beta.2"
-console = "0.14.0"
-wee_alloc = "0.4.5"
-
 [profile.release]
 lto = true
 opt-level = "s"
+
+[features]
+default = ["wee_alloc"]
+
+[dependencies]
+wee_alloc = { version = "0.4.5", optional = true }
+clap = "3.0.0-beta.4"
+console = "0.14.1"
