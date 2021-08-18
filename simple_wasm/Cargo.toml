@@ -5,7 +5,7 @@ authors = ["Cédric Eberhardt <hello+code@cedeber.fr>"]
 edition = "2018"
 
 [lib]
-crate-type = ["cdylib"]
+crate-type = ["cdylib", "rlib"]
 
 [profile.release]
 lto = true
@@ -15,4 +15,4 @@ opt-level = 's'
 default = ["wee_alloc"]
 
 [dependencies]
-wee_alloc = { version = "0.4", optional = true }
+wee_alloc = { version = "0.4.5", optional = true }
