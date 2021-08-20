@@ -10,6 +10,10 @@
     <script type="module">
       import init, { add } from "./pkg/simple_web.js";
 
+      window.wasm_cb = (str) => {
+        console.log("main thread", str);
+      };
+
       (async function () {
         // init is main();
         await init(); // Accept a path as param if the .wasm file is not package_bg.wasm

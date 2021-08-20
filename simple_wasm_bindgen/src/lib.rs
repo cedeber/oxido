@@ -16,10 +16,12 @@ pub fn main() -> Result<(), JsValue> {
 #[wasm_bindgen]
 extern "C" {
     // From Javascript
+    fn wasm_cb(s: &str);
 }
 
 #[wasm_bindgen]
 pub fn add(a: i32, b: i32) -> i32 {
+    wasm_cb("Hello from Rust!");
     a + b
 }
 

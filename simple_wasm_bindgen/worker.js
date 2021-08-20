@@ -1,12 +1,16 @@
-import init, { add } from "../pkg/simple_web.js";
+import init, { add } from "./pkg/simple_web.js";
 
 let ready = init();
 let ctx = self;
 
-ctx.addEventListener("message", event => {
-    let { a, b } = event.data;
+ctx.wasm_cb = (str) => {
+  console.log("worker thread", str);
+};
 
-    ready.then(() => {
-        ctx.postMessage(add(3, 2));
-    });
+ctx.addEventListener("message", (event) => {
+  let { a, b } = event.data;
+
+  ready.then(() => {
+    ctx.postMessage(add(a, b));
+  });
 });
