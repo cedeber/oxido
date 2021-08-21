@@ -8,7 +8,8 @@
     <p>Default: <span id="app"></span></p>
     <p>Worker: <span id="worker"></span></p>
     <script type="module">
-      import init, { add } from "./pkg/simple_web.js";
+      // Wasm Pack in the main thread
+      import init, { add } from "./pkg/simple_wasm.js";
 
       window.wasm_cb = (str) => {
         console.log("main thread", str);
@@ -23,14 +24,17 @@
       })();
     </script>
     <script type="module">
-      let worker = new Worker("./worker.js", { type: "module" });
-      let app = document.querySelector("#worker");
+      // Wasm Pack in the worker thread
+      (function () {
+        let worker = new Worker("./worker.js", { type: "module" });
+        let app = document.querySelector("#worker");
 
-      worker.addEventListener("message", (event) => {
-        app.innerHTML = event.data;
-      });
+        worker.addEventListener("message", (event) => {
+          app.innerHTML = event.data;
+        });
 
-      worker.postMessage({ a: 3, b: 2 });
+        worker.postMessage({ a: 3, b: 2 });
+      })();
     </script>
   </body>
 </html>

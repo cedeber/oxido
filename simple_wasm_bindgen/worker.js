@@ -1,4 +1,4 @@
-import init, { add } from "./pkg/simple_web.js";
+import init, { add } from "./pkg/simple_wasm.js";
 
 let ready = init();
 let ctx = self;
