@@ -26,7 +26,8 @@ wasmtime target/wasm32-wasi/release/simple_wasm.wasm --invoke add 3 2
 
 ## Javascript
 
-The browsers have all the needed tools.
+The browsers have all the needed tools. But supports only intergers and floats.
+For more glue, you need to use wasm_bindgen.
 
 ## Python
 
