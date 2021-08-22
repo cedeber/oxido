@@ -17,3 +17,4 @@ default = ["wee_alloc"]
 wee_alloc = { version = "0.4.5", optional = true }
 clap = "3.0.0-beta.4"
 console = "0.14.1"
+regex = "1.5.4"

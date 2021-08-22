@@ -1,3 +1,4 @@
+use regex::Regex;
 use std::error::Error;
 use std::fs;
 
@@ -24,9 +25,12 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
 }
 
 pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
+    let re = Regex::new(query).unwrap();
+
     contents
         .lines()
-        .filter(|line| line.contains(query))
+        // .filter(|line| line.contains(query))
+        .filter(|line| re.find(line).is_some())
         .collect()
 }
 
