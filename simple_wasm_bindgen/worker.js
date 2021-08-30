@@ -4,7 +4,7 @@ let ready = init();
 let ctx = self;
 
 ctx.wasm_cb = (str) => {
-  console.log("worker thread", str);
+  console.log("(worker thread)", str);
 };
 
 ctx.addEventListener("message", (event) => {

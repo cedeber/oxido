@@ -7,12 +7,13 @@
   <body>
     <p>Default: <span id="app"></span></p>
     <p>Worker: <span id="worker"></span></p>
+    <p>Async: <span id="async"></span></p>
     <script type="module">
-      // Wasm Pack in the main thread
+      // Wasm in the main thread
       import init, { add } from "./pkg/simple_wasm.js";
 
       window.wasm_cb = (str) => {
-        console.log("main thread", str);
+        console.log("(main thread)", str);
       };
 
       (async function () {
@@ -20,11 +21,11 @@
         await init(); // Accept a path as param if the .wasm file is not package_bg.wasm
 
         let app = document.querySelector("#app");
-        app.innerHTML = add(3, 2);
+        app.innerHTML = String(add(3, 2));
       })();
     </script>
     <script type="module">
-      // Wasm Pack in the worker thread
+      // Wasm in the worker thread
       (function () {
         let worker = new Worker("./worker.js", { type: "module" });
         let app = document.querySelector("#worker");
@@ -34,6 +35,28 @@
         });
 
         worker.postMessage({ a: 3, b: 2 });
+      })();
+    </script>
+    <script type="module">
+      // Async Wasm: Promise <-> Futures
+      // Wasm in the main thread
+      import init, { async_add } from "./pkg/simple_wasm.js";
+
+      // Could also be async/await
+      window.async_wasm_cb = (str) =>
+        new Promise((resolve) => {
+          window.setTimeout(() => {
+            console.log("(main thread + async)", str);
+            resolve(4); // will add 4 to the next async_add() call
+          }, 2000);
+        });
+
+      (async function () {
+        // init is main();
+        await init(); // Accept a path as param if the .wasm file is not package_bg.wasm
+
+        let app = document.querySelector("#async");
+        app.innerHTML = String(await async_add(3, 2));
       })();
     </script>
   </body>

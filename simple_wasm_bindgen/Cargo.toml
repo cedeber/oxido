@@ -18,8 +18,6 @@ opt-level = "s"
 # Also see https://rustwasm.github.io/book/reference/code-size.html#use-the-wasm-opt-tool 
 
 [dependencies]
-wasm-bindgen = "0.2.75"
-
 # The `console_error_panic_hook` crate provides better debugging of panics by
 # logging them with `console.error`. This is great for development, but requires
 # all the `std::fmt` and `std::panicking` infrastructure, so isn't great for
@@ -30,3 +28,7 @@ console_error_panic_hook = { version = "0.1.6", optional = true }
 # compared to the default allocator's ~10K. It is slower than the default
 # allocator, however.
 wee_alloc = { version = "0.4.5", optional = true }
+
+wasm-bindgen = "0.2.76"
+wasm-bindgen-futures = "0.4.26"
+js-sys = "0.3.53"
