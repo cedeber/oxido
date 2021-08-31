@@ -36,7 +36,10 @@ pub fn add(a: i32, b: i32) -> i32 {
 pub async fn async_add(a: i32, b: i32) -> Result<i32, JsValue> {
     log("[ASYNC] async_add() called");
     // Wait from JS
-    let c = async_wasm_cb("Hello from Async Rust!").await?.as_f64().unwrap() as i32;
+    let c = async_wasm_cb("Hello from Async Rust!")
+        .await?
+        .as_f64()
+        .unwrap() as i32;
     log("[ASYNC] will return addition result");
     Ok(a + b + c)
 }

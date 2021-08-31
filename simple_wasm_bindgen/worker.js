@@ -1,16 +1,30 @@
-import init, { add } from "./pkg/simple_wasm.js";
+import init, { add, async_add } from "./pkg/simple_wasm.js";
 
-let ready = init();
-let ctx = self;
-
-ctx.wasm_cb = (str) => {
+/* --- Extern --- */
+// These functions will be called from Rust/Wasm
+self.wasm_cb = (str) => {
   console.log("(worker thread)", str);
 };
 
-ctx.addEventListener("message", (event) => {
-  let { a, b } = event.data;
-
-  ready.then(() => {
-    ctx.postMessage(add(a, b));
+// Could also be async/await
+self.async_wasm_cb = (str) =>
+  new Promise((resolve) => {
+    self.setTimeout(() => {
+      console.log("(worker thread + async)", str);
+      resolve(4); // will add 4 to the next async_add() call
+    }, 2000);
   });
+
+/* --- Worker --- */
+self.addEventListener("message", async (event) => {
+  const { a, b } = event.data;
+
+  await init();
+
+  // Sync
+  self.postMessage(add(a, b));
+
+  // Async
+  const result = await async_add(a, b);
+  self.postMessage(result);
 });
