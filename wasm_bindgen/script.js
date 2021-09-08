@@ -1,4 +1,4 @@
-import init, { add, async_add } from "./pkg/simple_wasm.js";
+import init, { add, async_add, async_request } from "./pkg/simple_wasm.js";
 
 /* --- Extern --- */
 // These functions will be called from Rust/Wasm
@@ -29,6 +29,13 @@ async function main() {
   asyncEl.innerHTML = String(await async_add(3, 2));
 }
 
+async function request() {
+  // -- Async: Request --
+  await init();
+  const requestEl = document.getElementById("request");
+  requestEl.innerHTML = await async_request();
+}
+
 /* --- Wasm in the worker thread --- */
 function worker() {
   const workerEl = document.getElementById("worker");
@@ -44,3 +51,4 @@ function worker() {
 // -> Launch
 main();
 worker();
+request();

@@ -44,6 +44,13 @@ pub async fn async_add(a: i32, b: i32) -> Result<i32, JsValue> {
     Ok(a + b + c)
 }
 
+#[wasm_bindgen]
+pub async fn async_request() -> Result<JsValue, JsValue> {
+    let resp = reqwest::get("https://httpbin.org/ip").await?.text().await?;
+
+    Ok(JsValue::from_serde(&resp).unwrap())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
