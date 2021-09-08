@@ -24,16 +24,13 @@ async function main() {
   const syncEl = document.getElementById("sync");
   syncEl.innerHTML = String(add(3, 2));
 
+  // -- Async: Request --
+  const requestEl = document.getElementById("request");
+  requestEl.innerHTML = await async_request();
+
   // -- Asynchronous: Promise <-> Futures --
   const asyncEl = document.getElementById("async");
   asyncEl.innerHTML = String(await async_add(3, 2));
-}
-
-async function request() {
-  // -- Async: Request --
-  await init();
-  const requestEl = document.getElementById("request");
-  requestEl.innerHTML = await async_request();
 }
 
 /* --- Wasm in the worker thread --- */
@@ -51,4 +48,4 @@ function worker() {
 // -> Launch
 main();
 worker();
-request();
+// request();
