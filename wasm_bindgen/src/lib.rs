@@ -45,10 +45,15 @@ pub async fn async_add(a: i32, b: i32) -> Result<i32, JsValue> {
 }
 
 #[wasm_bindgen]
-pub async fn async_request() -> Result<JsValue, JsValue> {
-    let resp = reqwest::get("https://httpbin.org/ip").await?.text().await?;
+pub async fn async_request() -> String {
+    let resp = reqwest::get("https://httpbin.org/ip")
+        .await
+        .unwrap()
+        .text()
+        .await
+        .unwrap();
 
-    Ok(JsValue::from_serde(&resp).unwrap())
+    resp
 }
 
 #[cfg(test)]
