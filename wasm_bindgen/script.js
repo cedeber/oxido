@@ -1,4 +1,13 @@
-import init, { add, async_add, async_request } from "./pkg/simple_wasm.js";
+import init, {
+  add,
+  async_add,
+  async_request,
+  error,
+  async_error,
+  panic,
+  try_catch_rust,
+  async_try_catch_rust,
+} from "./pkg/simple_wasm.js";
 
 /* --- Extern --- */
 // These functions will be called from Rust/Wasm
@@ -15,10 +24,22 @@ window.async_wasm_cb = (str) =>
     }, 2000);
   });
 
+window.try_catch = () => {
+  throw new Error("This is a JS Error");
+};
+
+window.async_try_catch = async () => {
+  throw new Error("This is a JS Error");
+};
+
 /* --- Wasm in the main thread --- */
 async function main() {
   // init is main();
   await init(); // Accept a path as param if the .wasm file is not package_bg.wasm
+
+  // Will do i32 casting: "3.2" => 3, 3.98 => 3
+  let res = add("3.2", 3.98);
+  console.log("result:", res);
 
   // -- Synchronous --
   const syncEl = document.getElementById("sync");
@@ -31,6 +52,32 @@ async function main() {
   // -- Asynchronous: Promise <-> Futures --
   const asyncEl = document.getElementById("async");
   asyncEl.innerHTML = String(await async_add(3, 2));
+
+  try {
+    // Function that returns a Result/Err from Rust
+    error();
+  } catch (e) {
+    console.warn("Rust/Wasm failure:", e);
+  }
+
+  // Async function that returns a Result/Err from Rust
+  async_error().catch((e) => console.warn("Async Rust/Wasm failure:", e));
+
+  try {
+    // Function that returns a Result/Err from Rust
+    try_catch_rust();
+  } catch (e) {
+    console.warn("JS failure in Rust/Wasm:", e);
+  }
+
+  // Should panic. Neither catch() not try/catch will work?
+  async_try_catch_rust().catch((e) => {
+    console.warn("Async JS failure in Rust/Wasm:", e);
+  });
+
+  // Function that panic from Rust. Will reject this Promise. Otherwise use try/catch.
+  // See the main() call.
+  panic();
 }
 
 /* --- Wasm in the worker thread --- */
@@ -46,6 +93,7 @@ function worker() {
 }
 
 // -> Launch
-main();
+main().catch((e) => {
+  console.warn("Err/panic:", e);
+});
 worker();
-// request();
