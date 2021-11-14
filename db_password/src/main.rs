@@ -1,5 +1,4 @@
 use data_encoding::HEXUPPER;
-use dotenv;
 use jsonwebtoken::errors::ErrorKind;
 use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
 use ring::rand::SecureRandom;
@@ -112,7 +111,7 @@ fn verify_token(username: &str, encoded_token: &str) -> bool {
         ..Default::default()
     };
     let token = decode::<Claims>(
-        &encoded_token,
+        encoded_token,
         &DecodingKey::from_secret(secret.as_bytes()),
         &validation,
     );
