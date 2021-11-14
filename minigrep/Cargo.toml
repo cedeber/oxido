@@ -2,19 +2,14 @@
 name = "minigrep"
 version = "0.1.0"
 authors = ["Cédric Eberhardt <hello+code@cedeber.fr>"]
-edition = "2018"
+edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [profile.release]
-lto = true
-opt-level = "s"
-
-[features]
-default = ["wee_alloc"]
+lto = "thin"
 
 [dependencies]
-wee_alloc = { version = "0.4.5", optional = true }
-clap = "3.0.0-beta.4"
-console = "0.14.1"
+clap = "3.0.0-beta.5"
+console = "0.15.0"
 regex = "1.5.4"
