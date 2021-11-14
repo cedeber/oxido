@@ -1,6 +1,5 @@
 use clap::{App, Arg};
-use console::style;
-use console::Term;
+use console::{style, Term};
 use minigrep::Config;
 use std::{env, error::Error};
 

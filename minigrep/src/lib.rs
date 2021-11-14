@@ -1,3 +1,4 @@
+use console::Term;
 use regex::Regex;
 use std::error::Error;
 use std::fs;
@@ -9,6 +10,7 @@ pub struct Config {
 }
 
 pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
+    let term = Term::stdout();
     let contents = fs::read_to_string(config.filename)?;
 
     let results = if config.case_sensitive {
@@ -18,7 +20,7 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
     };
 
     for line in results {
-        println!("{}", line);
+        term.write_line(line)?;
     }
 
     Ok(())
