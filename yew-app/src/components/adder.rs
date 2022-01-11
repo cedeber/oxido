@@ -1,3 +1,4 @@
+use stylist::{css, StyleSource, YieldStyle};
 use yew::prelude::*;
 
 #[derive(PartialEq, Properties)]
@@ -10,11 +11,11 @@ pub enum Msg {
     RemoveOne,
 }
 
-pub struct Model {
+pub struct Adder {
     value: i32,
 }
 
-impl Component for Model {
+impl Component for Adder {
     type Message = Msg;
     type Properties = Props;
 
@@ -43,11 +44,29 @@ impl Component for Model {
         let props = ctx.props();
 
         html! {
-            <>
-                <button onclick={link.callback(|_| Msg::AddOne)}>{ format!("+{}", props.qtty) }</button>
+            <div class={self.style()}>
+                <button class={"button"} onclick={link.callback(|_| Msg::AddOne)}>{ format!("+{}", props.qtty) }</button>
                 <button onclick={link.callback(|_| Msg::RemoveOne)}>{ format!("-{}", props.qtty) }</button>
                 <p>{ self.value }</p>
-            </>
+            </div>
         }
+    }
+}
+
+impl YieldStyle for Adder {
+    fn style_from(&self) -> StyleSource<'static> {
+        // language=SCSS prefix={ suffix=}
+        css!(
+            r#"
+color: red;
+
+.button {
+  background-color: hotpink;
+  border: 0;
+  border-radius: 3px;
+  cursor: pointer;
+}
+"#
+        )
     }
 }

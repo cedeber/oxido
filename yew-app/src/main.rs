@@ -1,14 +1,15 @@
 mod components;
 
-use crate::components::adder::Model;
+use crate::components::adder::Adder;
+use stylist::yew::styled_component;
 use yew::prelude::*;
 
-#[function_component(App)]
+#[styled_component(App)]
 pub fn app() -> Html {
     html! {
-        <>
-            <Model qtty={2} />
-        </>
+        <div class={css!("color: crimson;")}>
+            <Adder qtty={2} />
+        </div>
     }
 }
 
