@@ -44,9 +44,9 @@ impl Component for Adder {
         let props = ctx.props();
 
         html! {
-            <div class={self.style()}>
-                <button class={"button"} onclick={link.callback(|_| Msg::AddOne)}>{ format!("+{}", props.qtty) }</button>
-                <button onclick={link.callback(|_| Msg::RemoveOne)}>{ format!("-{}", props.qtty) }</button>
+            <div class={format!("flex gap-3 {}", self.style().get_class_name())}>
+                <button class={"px-3 py-2 bg-sky-500 hover:bg-sky-700 button"} onclick={link.callback(|_| Msg::AddOne)}>{ format!("+{}", props.qtty) }</button>
+                <button class={"px-3 py-2 bg-green-500 hover:bg-green-700 button"} onclick={link.callback(|_| Msg::RemoveOne)}>{ format!("-{}", props.qtty) }</button>
                 <p>{ self.value }</p>
             </div>
         }
@@ -58,13 +58,8 @@ impl YieldStyle for Adder {
         // language=SCSS prefix={ suffix=}
         css!(
             r#"
-color: red;
-
 .button {
-  background-color: hotpink;
-  border: 0;
-  border-radius: 3px;
-  cursor: pointer;
+  font-weight: 700;
 }
 "#
         )

@@ -7,7 +7,8 @@ use yew::prelude::*;
 #[styled_component(App)]
 pub fn app() -> Html {
     html! {
-        <div class={css!("color: crimson;")}>
+        // language=SCSS prefix={ suffix=}
+        <div class={css!("color: #242526;")}>
             <Adder qtty={2} />
         </div>
     }
