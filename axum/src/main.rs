@@ -1,8 +1,9 @@
 use axum::{
+    extract::{Form, Json, Path},
     http::StatusCode,
     response::{Html, IntoResponse},
     routing::{get, post},
-    Json, Router, Server,
+    Router, Server,
 };
 use serde::{Deserialize, Serialize};
 use std::net::SocketAddr;
@@ -16,7 +17,9 @@ async fn main() {
     // build our application with a route
     let app = Router::new()
         .route("/", get(hello))
-        .route("/users", post(create_user));
+        .route("/json", post(json))
+        .route("/form", post(form))
+        .route("/path/:user_id/:team_id", get(path));
 
     // run our app with hyper
     // `axum::Server` is a re-export of `hyper::Server`
@@ -32,7 +35,8 @@ async fn hello() -> impl IntoResponse {
     (StatusCode::NOT_FOUND, Html("Hello, World!"))
 }
 
-async fn create_user(
+// JSON
+async fn json(
     // this argument tells axum to parse the request body
     // as JSON into a `CreateUser` type
     Json(payload): Json<CreateUser>,
@@ -59,4 +63,26 @@ struct CreateUser {
 struct User {
     id: u64,
     username: String,
+}
+
+// Form
+async fn form(Form(input): Form<Input>) -> impl IntoResponse {
+    Html(format!("{}, {}", input.name, input.email))
+}
+
+#[derive(Deserialize)]
+struct Input {
+    name: String,
+    email: String,
+}
+
+// Path
+async fn path(Path(Params { user_id, team_id }): Path<Params>) -> impl IntoResponse {
+    Html(format!("{}, {}", user_id, team_id))
+}
+
+#[derive(Deserialize)]
+struct Params {
+    user_id: u32,
+    team_id: u32,
 }
