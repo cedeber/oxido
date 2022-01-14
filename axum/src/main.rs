@@ -5,9 +5,10 @@ use axum::{
     routing::{get, post},
     Router, Server,
 };
+use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
-use std::net::SocketAddr;
-use tracing::debug;
+use std::{net::SocketAddr, time::Instant};
+use tracing::{debug, info};
 
 #[tokio::main]
 async fn main() {
@@ -19,7 +20,8 @@ async fn main() {
         .route("/", get(hello))
         .route("/json", post(json))
         .route("/form", post(form))
-        .route("/path/:user_id/:team_id", get(path));
+        .route("/path/:user_id/:team_id", get(path))
+        .route("/sum", get(multi_threaded));
 
     // run our app with hyper
     // `axum::Server` is a re-export of `hyper::Server`
@@ -67,13 +69,13 @@ struct User {
 
 // Form
 async fn form(Form(input): Form<Input>) -> impl IntoResponse {
-    Html(format!("{}, {}", input.name, input.email))
+    Html(format!("{}, {:?}", input.name, input.email))
 }
 
 #[derive(Deserialize)]
 struct Input {
     name: String,
-    email: String,
+    email: Option<String>,
 }
 
 // Path
@@ -85,4 +87,21 @@ async fn path(Path(Params { user_id, team_id }): Path<Params>) -> impl IntoRespo
 struct Params {
     user_id: u32,
     team_id: u32,
+}
+
+// Multi threaded
+fn fibonacci(n: u32) -> u32 {
+    match n {
+        0..=1 => 1,
+        _ => fibonacci(n - 1) + fibonacci(n - 2),
+    }
+}
+
+async fn multi_threaded() -> impl IntoResponse {
+    let input: [u32; 40] = (1..=40).collect::<Vec<_>>().try_into().unwrap();
+    let start = Instant::now();
+    let response: u32 = input.par_iter().map(|&i| fibonacci(i)).sum();
+    let end = Instant::now();
+    info!("{}ms", end.duration_since(start).as_millis());
+    response.to_string()
 }
