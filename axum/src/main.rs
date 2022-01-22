@@ -1,3 +1,5 @@
+mod entity;
+
 use axum::{
     extract::{Form, Json, Path},
     http::StatusCode,
@@ -5,7 +7,10 @@ use axum::{
     routing::{get, post},
     Router, Server,
 };
+use dotenv::dotenv;
 use rayon::prelude::*;
+use sea_orm::{entity::*, query::*, tests_cfg::cake};
+use sea_orm::{Database, DatabaseConnection};
 use serde::{Deserialize, Serialize};
 use std::{net::SocketAddr, time::Instant};
 use tracing::{debug, info};
@@ -14,6 +19,7 @@ use tracing::{debug, info};
 async fn main() {
     // initialize tracing
     tracing_subscriber::fmt::init();
+    dotenv().ok();
 
     // build our application with a route
     let app = Router::new()
@@ -21,7 +27,8 @@ async fn main() {
         .route("/json", post(json))
         .route("/form", post(form))
         .route("/path/:user_id/:team_id", get(path))
-        .route("/sum", get(multi_threaded));
+        .route("/sum", get(multi_threaded))
+        .route("/db", get(from_db));
 
     // run our app with hyper
     // `axum::Server` is a re-export of `hyper::Server`
@@ -104,4 +111,13 @@ async fn multi_threaded() -> impl IntoResponse {
     let end = Instant::now();
     info!("{}ms", end.duration_since(start).as_millis());
     response.to_string()
+}
+
+async fn from_db() -> impl IntoResponse {
+    use entity::users;
+
+    let db: DatabaseConnection = Database::connect("sqlite:db.sqlite").await.unwrap();
+    let user: Option<users::Model> = users::Entity::find_by_id(1).one(&db).await.unwrap();
+
+    format!("{:?}", user)
 }
