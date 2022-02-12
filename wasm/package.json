@@ -1,5 +1,5 @@
 {
-  "name": "wasm",
+  "name": "my-app",
   "version": "1.0.0",
   "scripts": {
     "wasm": "wasm-pack build --release --target web --out-dir ../../packages/pkg ./crates/wasm",
