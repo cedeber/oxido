@@ -1,0 +1,10 @@
+[workspace]
+members = ["crates/*"]
+
+[profile.release]
+# Link time optimization using using whole-program analysis.
+# It will make the .wasm smaller, but it will also make it faster at runtime!
+lto = true
+# Tell `rustc` to optimize for small code size.
+opt-level = "s"
+# Also see https://rustwasm.github.io/book/reference/code-size.html#use-the-wasm-opt-tool

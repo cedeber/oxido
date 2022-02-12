@@ -1,0 +1,22 @@
+{
+  "name": "wasm",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "parcel src/index.html"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "comlink": "^4.3.1",
+    "parcel": "^2.2.1",
+    "postcss": "^8.4.6",
+    "wasm-feature-detect": "^1.2.11",
+    "sum": "workspace:wasm@*"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.13"
+  }
+}

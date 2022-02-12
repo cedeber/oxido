@@ -1,0 +1,14 @@
+# IDE
+.vscode/
+.idea/
+
+# Install and Build
+target/
+pkg/
+node_modules/
+.parcel-cache/
+dist/
+
+# Other
+.DS_Store
+*.log
