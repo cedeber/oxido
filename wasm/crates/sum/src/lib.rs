@@ -18,3 +18,18 @@ pub fn par_sum() -> u32 {
     let response: u32 = input.par_iter().map(|&i| fibonacci(i)).sum();
     response
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn single_thread() {
+        assert_eq!(433494435, sum());
+    }
+
+    #[test]
+    fn multi_thread() {
+        assert_eq!(433494435, par_sum());
+    }
+}
