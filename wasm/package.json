@@ -1,8 +1,0 @@
-{
-  "name": "my-app",
-  "version": "1.0.0",
-  "scripts": {
-    "wasm": "wasm-pack build --release --target web --out-dir ../../packages/pkg ./crates/wasm",
-    "dev": "pnpm run wasm && pnpm recursive run dev"
-  }
-}
