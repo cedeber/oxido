@@ -1,7 +1,7 @@
 clone:
-	depth: full
+  depth: full
 pipelines:
-	default:
-	- step:
-		script:
-		- git push --mirror git@github.com:cedeber/oxido.git
+  default:
+  - step:
+      script:
+      - git push --mirror git@github.com:cedeber/oxido.git
