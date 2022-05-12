@@ -26,6 +26,14 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+/// Search
+///
+/// # Examples
+///
+/// ```
+/// use minigrep::search;
+/// search("en", "Then");
+/// ```
 pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
     let re = Regex::new(query).unwrap();
 
