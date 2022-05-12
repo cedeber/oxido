@@ -4,7 +4,14 @@ version = "0.1.0"
 authors = ["Cédric Eberhardt <hello+code@cedeber.fr>"]
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[profile.release]
+# Link time optimization using using whole-program analysis.
+# It will make the .wasm smaller, but it will also make it faster at runtime!
+lto = true
+# Tell `rustc` to optimize for small code size.
+opt-level = "s"
+# This causes debuginfo to be stripped from release binaries.
+strip = "debuginfo"
 
 [dependencies]
-rand = "0.8.4"
+rand = "0.8.5"
