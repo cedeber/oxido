@@ -1,7 +1,18 @@
-import init from './pkg/canvas.js'
+import init, { well } from "./pkg/canvas.js";
 
-self.onmessage = event => {console.log(event.data)};
+init().then(() => {
+  self.onmessage = ({ data }) => {
+    // console.log("worker", data);
 
-self.postMessage("hello from worker");
+    const arr = new Int8Array(data);
+    // console.log(data, arr);
 
-init();
+    arr[5] = 4;
+
+    well(data);
+
+    self.postMessage("reload");
+  };
+
+  self.postMessage("ready");
+});
