@@ -22,6 +22,26 @@ let sab = new SharedArrayBuffer(WIDTH * HEIGHT * 4);
 var typedArr = new Uint8ClampedArray(sab);
 const worker = new Worker(new URL("./worker.js", import.meta.url), { type: "module" });
 
+function debounce(func, delay) {
+  let timer;
+
+  return function (...args) {
+    clearTimeout(timer);
+    timer = window.setTimeout(func.bind(this, ...args), delay);
+  };
+}
+
+function throttle(func, delay) {
+  let start = performance.now();
+
+  return function (...args) {
+    if (performance.now() - start > delay) {
+      start = performance.now();
+      return func.call(this, ...args);
+    }
+  };
+}
+
 [
   "mouseenter",
   "mousedown",
@@ -36,26 +56,27 @@ const worker = new Worker(new URL("./worker.js", import.meta.url), { type: "modu
   "pointercancel",
   "lostpointercapture",
 ].forEach((eventName) => {
-  canvas.addEventListener(eventName, (e) => {
+  const debCb = throttle((e) => {
+    console.log(e);
     worker.postMessage({
       eventName,
       event: {
-        x: e.clientX,
-        y: e.clientY,
+        x: e.offsetX,
+        y: e.offsetY,
         type: e.type,
       },
     });
-  });
+  }, 16);
+  canvas.addEventListener(eventName, debCb);
 });
 
 worker.addEventListener("message", ({ data }) => {
   if (data === "ready") {
     worker.postMessage(sab);
-    setTimeout(() => {
-      worker.postMessage("draw");
-    }, 2000);
+    worker.postMessage("draw");
   } else if (data === "reload") {
     requestAnimationFrame(() => {
+      // console.log(typedArr);
       const start = performance.now();
       const imgData = new ImageData(typedArr.slice(0), WIDTH, HEIGHT);
       ctx.putImageData(imgData, 0, 0);
