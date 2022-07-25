@@ -5,6 +5,7 @@ use embedded_graphics::{
 };
 use js_sys::{SharedArrayBuffer, Uint8ClampedArray};
 use wasm_bindgen::prelude::*;
+use web_sys::console::{log_0, log_1};
 
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
@@ -32,6 +33,14 @@ struct ExampleDisplay {
     // framebuffer: [u8; 64 * 64 * 4],
     framebuffer: Uint8ClampedArray,
     // iface: SPI1,
+    length: u32,
+}
+
+impl ExampleDisplay {
+    /// Way faster then .clear()
+    fn reset(&mut self) {
+        self.framebuffer.fill(0x0, 0, self.length);
+    }
 }
 
 impl DrawTarget for ExampleDisplay {
@@ -46,13 +55,14 @@ impl DrawTarget for ExampleDisplay {
             // Check if the pixel coordinates are out of bounds (negative or greater than
             // (63,63)). `DrawTarget` implementation are required to discard any out of bounds
             // pixels without returning an error or causing a panic.
-            if let Ok((x @ 0..=63, y @ 0..=63)) = coord.try_into() {
+            if let Ok((x @ 0..=1719, y @ 0..=799)) = coord.try_into() {
                 // Calculate the index in the framebuffer.
-                let index = (x + y * 64) * 4;
-                // self.framebuffer[index] = color.r();
-                // self.framebuffer[index + 1] = color.r();
-                // self.framebuffer[index + 2] = color.r();
-                // self.framebuffer[index + 3] = 0xff;
+                let index: u32 = (x + y * 1720) * 4;
+
+                // self.framebuffer[index as usize] = color.r();
+                // self.framebuffer[index as usize + 1] = color.r();
+                // self.framebuffer[index as usize + 2] = color.r();
+                // self.framebuffer[index as usize + 3] = 0xff;
 
                 self.framebuffer.set_index(index, color.r());
                 self.framebuffer.set_index(index + 1, color.g());
@@ -67,46 +77,44 @@ impl DrawTarget for ExampleDisplay {
 
 impl OriginDimensions for ExampleDisplay {
     fn size(&self) -> Size {
-        Size::new(64, 64)
+        Size::new(1720, 800)
     }
 }
 
 #[wasm_bindgen]
-pub fn well(what: JsValue, _width: u32, _height: u32, x: i32, y: i32) -> Result<(), JsValue> {
+pub fn well(what: JsValue, width: u32, height: u32, x: i32, y: i32) -> Result<(), JsValue> {
     let data: SharedArrayBuffer = JsValue::into(what);
     let arr = Uint8ClampedArray::new(&data);
 
+    let length = width * height * 4;
     let mut display = ExampleDisplay {
-        // framebuffer: [0; 16384],
         framebuffer: arr,
+        length,
     };
 
     // clear
     let style = PrimitiveStyleBuilder::new()
         .stroke_color(Rgb888::RED)
         .stroke_width(3)
-        .fill_color(Rgb888::WHITE)
+        // .fill_color(Rgb888::WHITE)
         .build();
 
-    Rectangle::new(Point::new(0, 0), Size::new(64, 64))
-        .into_styled(style)
-        .draw(&mut display)
-        .unwrap();
+    let rect = Rectangle::new(Point::new(0, 0), Size::new(1720, 800)).into_styled(style);
 
     let circle = Circle::new(Point::new(22, 22), 20)
         .into_styled(PrimitiveStyle::with_stroke(Rgb888::BLACK, 1));
 
-    Line::new(Point::new(x, 0), Point::new(x, 64))
-        .into_styled(PrimitiveStyle::with_stroke(Rgb888::BLUE, 1))
-        .draw(&mut display)
-        .unwrap();
+    let line_x = Line::new(Point::new(x, 0), Point::new(x, 800))
+        .into_styled(PrimitiveStyle::with_stroke(Rgb888::BLUE, 1));
 
-    Line::new(Point::new(0, y), Point::new(64, y))
-        .into_styled(PrimitiveStyle::with_stroke(Rgb888::GREEN, 1))
-        .draw(&mut display)
-        .unwrap();
+    let line_y = Line::new(Point::new(0, y), Point::new(1720, y))
+        .into_styled(PrimitiveStyle::with_stroke(Rgb888::GREEN, 1));
 
+    display.reset();
+    rect.draw(&mut display).unwrap();
     circle.draw(&mut display).unwrap();
+    line_x.draw(&mut display).unwrap();
+    line_y.draw(&mut display).unwrap();
 
     // for y in 0..height {
     //     let in_top = (y / (height / 2)) == 0;

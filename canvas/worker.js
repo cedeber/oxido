@@ -4,13 +4,13 @@ init().then(() => {
   let sab;
 
   self.onmessage = ({ data }) => {
-    console.log(data);
-
     if (typeof data !== "string" && !data.eventName) {
       sab = data;
     } else if (data.eventName === "pointermove") {
-      // console.log(data.event);
+      const start = performance.now();
       well(sab, 1720, 800, Math.floor(data.event.x), Math.floor(data.event.y));
+      const end = performance.now();
+      console.log("drawing", `${(end - start).toFixed(0)}ms`);
       self.postMessage("reload");
     } else if (!data.eventName) {
       well(sab, 1720, 800, 0, 0);

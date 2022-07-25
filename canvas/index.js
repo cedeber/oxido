@@ -42,6 +42,8 @@ function throttle(func, delay) {
   };
 }
 
+let isWorking = false;
+
 [
   "mouseenter",
   "mousedown",
@@ -57,15 +59,18 @@ function throttle(func, delay) {
   "lostpointercapture",
 ].forEach((eventName) => {
   const debCb = throttle((e) => {
-    console.log(e);
-    worker.postMessage({
-      eventName,
-      event: {
-        x: e.offsetX,
-        y: e.offsetY,
-        type: e.type,
-      },
-    });
+    // we may miss the last frame on move here (if drawing >16ms)
+    if (!isWorking && eventName === "pointermove") {
+      worker.postMessage({
+        eventName,
+        event: {
+          x: e.offsetX,
+          y: e.offsetY,
+          type: e.type,
+        },
+      });
+      isWorking = true;
+    }
   }, 16);
   canvas.addEventListener(eventName, debCb);
 });
@@ -74,12 +79,19 @@ worker.addEventListener("message", ({ data }) => {
   if (data === "ready") {
     worker.postMessage(sab);
     worker.postMessage("draw");
+    isWorking = false;
   } else if (data === "reload") {
+    isWorking = false;
     requestAnimationFrame(() => {
-      // console.log(typedArr);
+      // console.log(WIDTH, HEIGHT, typedArr);
+      const fb = typedArr.slice(0);
       const start = performance.now();
-      const imgData = new ImageData(typedArr.slice(0), WIDTH, HEIGHT);
+      const imgData = new ImageData(fb, WIDTH, HEIGHT);
       ctx.putImageData(imgData, 0, 0);
+
+      // const imgData2 = new ImageData(fb, WIDTH, HEIGHT);
+      // ctx.putImageData(imgData2, 100, 100);
+
       const end = performance.now();
       console.log("render", `${(end - start).toFixed(0)}ms`);
     });
