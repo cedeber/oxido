@@ -5,13 +5,6 @@ version = "0.1.0"
 edition = "2021"
 authors = ["Cédric Eberhardt"]
 
-[profile.release]
-# Link-Time Optimization using whole-program analysis.
-# It will make the app smaller, but it will also make it faster at runtime!
-lto = true
-# This causes debuginfo to be stripped from release binaries.
-strip = "debuginfo"
-
 [dependencies]
 clap = { version = "4.0.29", features = ["derive"] }
 console = "0.15.2"
