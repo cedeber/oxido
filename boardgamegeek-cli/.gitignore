@@ -1,0 +1,14 @@
+/target
+*.log
+.idea
+.vscode
+.fleet
+.DS_Store
+
+# Export
+*.toml
+!Cargo.toml
+!rustfmt.toml
+*.db*
+*.sqlite*
+.env

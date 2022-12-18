@@ -1,0 +1,30 @@
+[package]
+name = "boardgamegeek-cli"
+description = "List game boards from BGG user collection"
+version = "0.1.0"
+edition = "2021"
+authors = ["Cédric Eberhardt"]
+
+[profile.release]
+# Link-Time Optimization using whole-program analysis.
+# It will make the app smaller, but it will also make it faster at runtime!
+lto = true
+# This causes debuginfo to be stripped from release binaries.
+strip = "debuginfo"
+
+[dependencies]
+clap = { version = "4.0.29", features = ["derive"] }
+console = "0.15.2"
+eframe = { version = "0.20.0", features = [
+    "wgpu",
+    "accesskit",
+    "default_fonts",
+], default-features = false }
+egui_extras = "0.20.0"
+regex = "1.7.0"
+reqwest = "0.11.13"
+roxmltree = "0.16.0"
+serde = { version = "1.0.148", features = ["derive"] }
+tokio = { version = "1.22.0", features = ["full"] }
+toml = "0.5.9"
+unicode-segmentation = "1.10.0"
