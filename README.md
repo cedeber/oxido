@@ -1,6 +1,6 @@
 # Óxido
 
-Rust and WebAssembly
+Rust and WebAssembly experiments.
 
 ## Crates
 
